@@ -1,0 +1,137 @@
+import org.junit.Test;
+import java.io.ByteArrayInputStream;
+import java.util.Scanner;
+import static org.junit.Assert.*;
+
+public class LoginSystemPOETest {
+
+    @Test
+    public void testCheckUsernameValid() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertTrue(system.checkUsername("user_"));
+    }
+
+    @Test
+    public void testCheckUsernameInvalidNoUnderscore() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkUsername("username"));
+    }
+
+    @Test
+    public void testCheckUsernameInvalidTooLong() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkUsername("very_long_username"));
+    }
+
+    @Test
+    public void testCheckPasswordComplexityValid() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertTrue(system.checkPasswordComplexity("Passw0rd!"));
+    }
+
+    @Test
+    public void testCheckPasswordComplexityInvalidShort() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkPasswordComplexity("Pwd1!"));
+    }
+
+    @Test
+    public void testCheckPasswordComplexityInvalidNoCapital() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkPasswordComplexity("passw0rd!"));
+    }
+
+    @Test
+    public void testCheckPasswordComplexityInvalidNoNumber() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkPasswordComplexity("Password!"));
+    }
+
+    @Test
+    public void testCheckPasswordComplexityInvalidNoSpecialChar() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkPasswordComplexity("Passw0rd"));
+    }
+
+    @Test
+    public void testCheckCellPhoneNumberValid() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertTrue(system.checkCellPhoneNumber("+1234567890"));
+    }
+
+    @Test
+    public void testCheckCellPhoneNumberInvalidNoPlus() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkCellPhoneNumber("1234567890"));
+    }
+
+    @Test
+    public void testCheckCellPhoneNumberInvalidTooShort() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertFalse(system.checkCellPhoneNumber("+123456"));
+    }
+
+    @Test
+    public void testRegisterUserSuccess() {
+        String input = "John\nDoe\nj_do\nPassw0rd!\n+1234567890";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertEquals("Registration successful!", system.registerUser(scanner));
+    }
+
+    @Test
+    public void testRegisterUserInvalidUsername() {
+        String input = "John\nDoe\ninvalidusername\nPassw0rd!\n+1234567890";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertTrue(system.registerUser(scanner).contains("Username is not correctly formatted"));
+    }
+
+    @Test
+    public void testRegisterUserInvalidPassword() {
+        String input = "John\nDoe\nj_do\ninvalid\n+1234567890";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertTrue(system.registerUser(scanner).contains("Password is not correctly formatted"));
+    }
+
+    @Test
+    public void testRegisterUserInvalidCellNumber() {
+        String input = "John\nDoe\nj_do\nPassw0rd!\ninvalid";
+        Scanner scanner = new Scanner(new ByteArrayInputStream(input.getBytes()));
+        LoginSystemPOE system = new LoginSystemPOE();
+        assertTrue(system.registerUser(scanner).contains("Cell phone number incorrectly formatted"));
+    }
+
+    @Test
+    public void testLoginUserSuccess() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        system.username = "testuser";
+        system.password = "Passw0rd!";
+        assertTrue(system.loginUser("testuser", "Passw0rd!"));
+    }
+
+    @Test
+    public void testLoginUserFailure() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        system.username = "testuser";
+        system.password = "Passw0rd!";
+        assertFalse(system.loginUser("wronguser", "WrongPass!"));
+    }
+
+    @Test
+    public void testReturnLoginStatusSuccess() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        system.firstName = "teezy";
+        system.lastName = "teeyz";
+        String result = system.returnLoginStatus(true);
+        assertEquals("Welcome John, Doe it is great to see you again.", result);
+    }
+
+    @Test
+    public void testReturnLoginStatusFailure() {
+        LoginSystemPOE system = new LoginSystemPOE();
+        String result = system.returnLoginStatus(false);
+        assertEquals("Username or password incorrect, please try again.", result);
+    }
+}
